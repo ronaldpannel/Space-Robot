@@ -23,8 +23,9 @@ window.addEventListener("load", function () {
       this.frameX = 0;
       this.maXFrame = 75;
       this.movementAngle = 0;
+      this.tracking = false;
 
-      this.mouse = {
+      this.pointer = {
         x: undefined,
         y: undefined,
       };
@@ -33,10 +34,15 @@ window.addEventListener("load", function () {
       this.eye2Img = document.getElementById("eye2");
       this.reflectionImg = document.getElementById("reflection");
       this.bodySprite = document.getElementById("bodySprite");
+      this.detectorLightImg = document.getElementById("detectorLight");
 
-      this.canvas.addEventListener("mousemove", (e) => {
-        this.mouse.x = e.offsetX;
-        this.mouse.y = e.offsetY;
+      this.canvas.addEventListener("pointermove", (e) => {
+        this.pointer.x = e.offsetX;
+        this.pointer.y = e.offsetY;
+        this.tracking = true;
+      });
+      this.canvas.addEventListener("pointerleave", (e) => {
+        this.tracking = false;
       });
     }
     draw(context) {
@@ -78,16 +84,26 @@ window.addEventListener("load", function () {
           this.eye2Img.height * 0.5
       );
       //reflection
+      context.beginPath();
       context.drawImage(
         this.reflectionImg,
         this.x - this.reflectionImg.width * 0.5,
         this.y - this.reflectionImg.height * 0.5
       );
+      //detector light
+      if (this.tracking) {
+        context.beginPath();
+        context.drawImage(
+          this.detectorLightImg,
+          this.x - this.reflectionImg.width * 0.5,
+          this.y - this.reflectionImg.height * 0.5 - 195
+        );
+      }
     }
     update() {
       //angle
-      const dx = this.mouse.x - this.x;
-      const dy = this.mouse.y - this.y;
+      const dx = this.pointer.x - this.x;
+      const dy = this.pointer.y - this.y;
       this.angle = Math.atan2(dy, dx);
 
       //sprite animation
